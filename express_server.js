@@ -1,19 +1,26 @@
 var express = require("express");
+const bodyParser = require("body-parser");
+
 var app = express();
 var PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
+var urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com",
+  "whatever":"https://www.starbucks.ca/"
+};
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -32,6 +39,11 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL:urlDatabase[req.params.id] };
     res.render("urls_show", templateVars);
 });
+app.get("/u/:id", (req, res) => {
+  console.log(req) ; 
+ let longURL=urlDatabase[req.params.id]
+   res.redirect(longURL);
+});
 
 app.get("/hello", (req, res) => {
     //let templateVars = {greeting :"Hello World"}
@@ -42,3 +54,7 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function generateRandomString() {
+  return Math.random().toString(36).replace('0.','').substr(6);
+}
